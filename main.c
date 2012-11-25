@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   }
 
   FILE *fs;
-  char *buffer;
+  unsigned char *buffer;
   long lSize;
   size_t result_size;
   int i;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     lSize = ftell(fs);
     rewind(fs);
 
-    buffer = (char*)malloc(sizeof(char)*lSize);
+    buffer = (unsigned char*)malloc(sizeof(unsigned char)*lSize);
     if (buffer == NULL) {
       printf("Buffer is null.");
       return -1;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     }
 
     check_fat16(buffer);
-    find_root_dir(buffer);
+    find_root_dir(buffer); 
 
   } else {
     printf("Could not open filesystem.");

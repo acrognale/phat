@@ -14,7 +14,7 @@
 struct block {
 };
 
-int check_fat16(char *buf) 
+int check_fat16(unsigned char *buf) 
 {
   char *signature;
   uint16 i;
@@ -30,16 +30,24 @@ int check_fat16(char *buf)
     printf("FAT16 file system detected!\n");
     return 0;
   }
+  else 
+  {
+    printf("No FAT16 file system was detected.\n");
+    return 1;
+  }
 }
 
-uint16 make_word(char *buf, uint16 offset, uint16 word_length)
+/*
+ * Based on my testing, this method doesn't work very well :S
+ */
+uint16 make_word(unsigned char *buf, uint16 offset, uint16 word_length)
 {
   int i;
   int p = 0;
-  uint16 word = 0;
+  uint16 word;
   for (i = offset+word_length; i > offset; i--)
   {
-    if (word == 0) {
+    if (!word) {
       word = buf[i];
     }
     else {
@@ -50,19 +58,22 @@ uint16 make_word(char *buf, uint16 offset, uint16 word_length)
   return word;
 }
 
-int find_root_dir(char *buf) 
+int find_root_dir(unsigned char *buf) 
 {
   uint16 num_fats = buf[NUM_FATS];
   printf("Number of FATs: %i\n", num_fats);
-  uint16 fat_size = make_word(buf, FAT_SIZE, 2);
+  uint16 fat_size = buf[FAT_SIZE+1] << 8 | buf[FAT_SIZE];
   printf("Number of blocks for one FAT: %u\n",fat_size);
   
   //blocks before root directory
-  uint16 bbrd = fat_size * num_fats + 1;
+  uint16 bbrd = (fat_size * num_fats) + 4;
   printf("Blocks before root dir: %u\n", bbrd);
+
   //get total bytes in a block
-  uint16 bbp = make_word(buf, BYTES_PER_BLOCK, 2);
+  //uint16 bbp = make_word(buf, BYTES_PER_BLOCK, 2);
+  uint16 bbp = buf[BYTES_PER_BLOCK+1] << 8 | buf[BYTES_PER_BLOCK];
   printf("Bytes per block: %u\n", bbp);
+
   //find root directory..
   uint16 root_dir = bbrd * bbp;
   printf("Root directory is at: %x\n", root_dir);
