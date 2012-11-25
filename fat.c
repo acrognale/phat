@@ -7,16 +7,9 @@
 #include <string.h>
 #include "fat.h"
 
-/*
- * Checks for the fat16 label in the boot block
- */
-
-struct block {
-};
-
 int check_fat16(unsigned char *buf) 
 {
-  char *signature;
+  unsigned char *signature;
   uint16 i;
   uint16 p;
   p = 0;
@@ -78,4 +71,24 @@ int find_root_dir(unsigned char *buf)
   uint16 root_dir = bbrd * bbp;
   printf("Root directory is at: %x\n", root_dir);
   printf("Total blocks: %u\n", make_word(buf, 0x20, 4));
+}
+
+block *make_blocks(unsigned char *buf, size_t block_length, uint16 total_blocks) 
+{
+  int i;
+  int bc = 0; //block counter
+  int dc = 0; //data counter
+  block *blocks;
+  blocks = (block*)malloc(sizeof(block)*total_blocks);
+  for (i = 0; i < sizeof(buf)/sizeof(char); i++) 
+  {
+    if (i % 512 == 0 && i > 0) 
+    {
+      bc++;
+      dc = 0;
+    }
+    blocks[bc].data[dc] = buf[i];
+    dc++;
+  }
+  return blocks;
 }

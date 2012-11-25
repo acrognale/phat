@@ -3,11 +3,17 @@
  */
 
 typedef unsigned short int uint16;
+typedef struct {
+  uint16 num;
+  uint16 length;
+  char *data;
+} block;
 
 int check_fat16(unsigned char *buf);
 int find_root_dir(unsigned char *buf);
 uint16 get_byte_array(unsigned char *buf, uint16 offset, uint16 length);
 uint16 ctouint16(unsigned char *buf, size_t length);
+block *make_blocks(unsigned char *buf, size_t block_length, uint16 total_blocks);
 
 #define FAT_16_SIGNATURE 0x36
 #define NUM_FATS 0x10
