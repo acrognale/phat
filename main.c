@@ -40,8 +40,6 @@ int main(int argc, char *argv[])
     }
 
     check_fat16(buffer);
-    //uhh.. I don't think this is actually needed...
-    //uint16 buf = ctouint16(buffer, result_size);
     find_root_dir(buffer);
 
   } else {
