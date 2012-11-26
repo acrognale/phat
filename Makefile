@@ -1,7 +1,7 @@
 SOURCES = main.c fat.c
 
 all:
-	gcc $(SOURCES) -o phat -ggdb
+	gcc $(SOURCES) -o phat -g
 
 fs:
 	dd bs=512 count=20000 if=/dev/zero of=test_file_system.img

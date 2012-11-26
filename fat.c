@@ -82,7 +82,7 @@ block* make_blocks(unsigned char *buf, size_t block_length)
   uint16 total_blocks;
   total_blocks = make_word(buf,TOTAL_BLOCKS,2);
   blocks = malloc(sizeof(block)*block_length*total_blocks);
-  blocks->data = malloc(sizeof(uint16)*block_length*total_blocks);
+  blocks->data = malloc(sizeof(unsigned char)*block_length);
   printf("%u\n", sizeof(blocks->data));
   for (i = 0; i < total_blocks * block_length; i++) 
   {
@@ -107,14 +107,13 @@ block* make_blocks(unsigned char *buf, size_t block_length)
       // blocks[bc].num = 1;
       blocks[bc].data[dc] = buf[i]; // copy last byte over
       bc++;
+      blocks[bc].data = malloc(sizeof(unsigned char)*block_length+1);
       dc = 0;
-      printf("\nBlock number %i created.\n", bc); 
     } 
     else 
     { 
       blocks[bc].data[dc] = buf[i];
-      //memcpy(&blocks[bc].data[dc],&buf[i],sizeof(unsigned char));
-      printf("%u",blocks[bc].data[dc]);
+      // memcpy(&blocks[bc].data[dc],&buf[i],sizeof(unsigned char));
       dc++;
     }
   }
