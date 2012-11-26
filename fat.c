@@ -81,20 +81,42 @@ block* make_blocks(unsigned char *buf, size_t block_length)
   block *blocks;
   uint16 total_blocks;
   total_blocks = make_word(buf,TOTAL_BLOCKS,2);
-  blocks = (block*)malloc(sizeof(block)*total_blocks);
-  blocks->data = (char*)malloc(sizeof(uint16)*block_length);
+  blocks = malloc(sizeof(block)*block_length*total_blocks);
+  blocks->data = malloc(sizeof(uint16)*block_length*total_blocks);
+  printf("%u\n", sizeof(blocks->data));
   for (i = 0; i < total_blocks * block_length; i++) 
   {
+    if (&blocks[bc] == NULL)
+    {
+      printf("blocks[bc] is null!\n");
+      return NULL;
+    }
+    else if (&blocks[bc].data[dc] == NULL)
+    {
+      printf("blocks[bc].data[dc] is null!\n");
+      return NULL;
+    }
+    else if (&buf[i] == NULL)
+    {
+      printf("buf[i] is null! \n");
+      return NULL;
+    }
     // check if a block has been iterated over yet
     if ((i % block_length) == 0 && i > 0)
     {
-      blocks[bc].num = 1;
+      // blocks[bc].num = 1;
+      blocks[bc].data[dc] = buf[i]; // copy last byte over
       bc++;
       dc = 0;
-      printf("Block number %i created. \n", bc);
+      printf("\nBlock number %i created.\n", bc); 
+    } 
+    else 
+    { 
+      blocks[bc].data[dc] = buf[i];
+      //memcpy(&blocks[bc].data[dc],&buf[i],sizeof(unsigned char));
+      printf("%u",blocks[bc].data[dc]);
+      dc++;
     }
-    blocks[bc].data[dc] = buf[i];
-    dc++;
   }
 
   printf("%u",blocks[0].data[0]);

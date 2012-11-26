@@ -6,7 +6,7 @@ typedef unsigned short int uint16;
 typedef struct {
   uint16 num;
   uint16 length;
-  char *data;
+  unsigned char *data;
 } block;
 
 int check_fat16(unsigned char *buf);
