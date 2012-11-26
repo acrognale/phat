@@ -39,9 +39,9 @@ int main(int argc, char *argv[])
       return -1;
     }
     check_fat16(buffer);
-    find_root_dir(buffer);
     block *fs_blocks;
     fs_blocks = make_blocks(buffer, 512);
+    find_root_dir(buffer, fs_blocks);
 
   } else {
     printf("Could not open filesystem.");
