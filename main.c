@@ -38,11 +38,10 @@ int main(int argc, char *argv[])
       printf("Buffer size does not match file");
       return -1;
     }
-
     check_fat16(buffer);
     find_root_dir(buffer);
     block *fs_blocks;
-    fs_blocks = make_blocks(buffer, 512, 1); 
+    fs_blocks = make_blocks(buffer, 512);
 
   } else {
     printf("Could not open filesystem.");

@@ -58,37 +58,45 @@ int find_root_dir(unsigned char *buf)
   uint16 fat_size = buf[FAT_SIZE+1] << 8 | buf[FAT_SIZE];
   printf("Number of blocks for one FAT: %u\n",fat_size);
   
-  //blocks before root directory
+  // blocks before root directory
   uint16 bbrd = (fat_size * num_fats) + 4;
   printf("Blocks before root dir: %u\n", bbrd);
 
-  //get total bytes in a block
-  //uint16 bbp = make_word(buf, BYTES_PER_BLOCK, 2);
+  // get total bytes in a block
+  // uint16 bbp = make_word(buf, BYTES_PER_BLOCK, 2);
   uint16 bbp = buf[BYTES_PER_BLOCK+1] << 8 | buf[BYTES_PER_BLOCK];
   printf("Bytes per block: %u\n", bbp);
 
-  //find root directory..
+  // find root directory..
   uint16 root_dir = bbrd * bbp;
   printf("Root directory is at: %x\n", root_dir);
-  printf("Total blocks: %u\n", make_word(buf, 0x20, 4));
+  printf("Total blocks: %u\n", make_word(buf, TOTAL_BLOCKS, 2));
 }
 
-block *make_blocks(unsigned char *buf, size_t block_length, uint16 total_blocks) 
+block* make_blocks(unsigned char *buf, size_t block_length) 
 {
   int i;
-  int bc = 0; //block counter
-  int dc = 0; //data counter
+  int bc = 0; // block counter
+  int dc = 0; // data counter
   block *blocks;
+  uint16 total_blocks;
+  total_blocks = make_word(buf,TOTAL_BLOCKS,2);
   blocks = (block*)malloc(sizeof(block)*total_blocks);
-  for (i = 0; i < sizeof(buf)/sizeof(char); i++) 
+  blocks->data = (char*)malloc(sizeof(uint16)*block_length);
+  for (i = 0; i < total_blocks * block_length; i++) 
   {
-    if (i % 512 == 0 && i > 0) 
+    // check if a block has been iterated over yet
+    if ((i % block_length) == 0 && i > 0)
     {
+      blocks[bc].num = 1;
       bc++;
       dc = 0;
+      printf("Block number %i created. \n", bc);
     }
     blocks[bc].data[dc] = buf[i];
     dc++;
   }
+
+  printf("%u",blocks[0].data[0]);
   return blocks;
 }
