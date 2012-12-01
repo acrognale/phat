@@ -6,9 +6,11 @@
 #include <stdlib.h>
 #include "fat.h"
 
-int main(int argc, char *argv[]) 
+int 
+main(int argc, char *argv[]) 
 {
-	if (argc <= 1) {
+	if (argc <= 1) 
+  {
     printf("Usage: %s <fat file system> \nex, %s test_file_system.img\n", argv[0],argv[0]);
     return 0;
   }
@@ -22,19 +24,22 @@ int main(int argc, char *argv[])
 
   // load the filesystem
   fs = fopen(argv[1],"r");
-  if (fs != NULL) {
+  if (fs != NULL) 
+  {
     fseek(fs, 0, SEEK_END);
     lSize = ftell(fs);
     rewind(fs);
 
     buffer = (unsigned char*)malloc(sizeof(unsigned char)*lSize);
-    if (buffer == NULL) {
+    if (buffer == NULL) 
+    {
       printf("Buffer is null.");
       return -1;
     }
 
     result_size = fread(buffer,1,lSize,fs);
-    if (result_size != lSize) {
+    if (result_size != lSize) 
+    {
       printf("Buffer size does not match file");
       return -1;
     }
@@ -43,7 +48,9 @@ int main(int argc, char *argv[])
     fs_blocks = make_blocks(buffer, 512);
     find_root_dir(buffer, fs_blocks);
 
-  } else {
+  } 
+  else 
+  {
     printf("Could not open filesystem.");
   }
 

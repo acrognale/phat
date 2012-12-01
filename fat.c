@@ -7,7 +7,8 @@
 #include <string.h>
 #include "fat.h"
 
-int check_fat16(unsigned char *buf) 
+int 
+check_fat16(unsigned char *buf) 
 {
   unsigned char *signature;
   uint16 i;
@@ -30,10 +31,8 @@ int check_fat16(unsigned char *buf)
   }
 }
 
-/*
- * Based on my testing, this method doesn't work very well :S
- */
-uint16 read_int(unsigned char *buf, uint16 offset, uint16 length)
+uint16 
+read_int(unsigned char *buf, uint16 offset, uint16 length)
 {
   if (length == 1) return (uint16) buf[offset];
   if (length == 2) return (uint16) buf[offset+1] << 8 | buf[offset];
@@ -41,7 +40,8 @@ uint16 read_int(unsigned char *buf, uint16 offset, uint16 length)
   if (length == 4) return (uint16) buf[offset+3] << 24 | buf[offset+2] << 16 | buf[offset+1] << 8 | buf[offset];
 }
 
-int find_root_dir(unsigned char *buf, block* blocks) 
+int 
+find_root_dir(unsigned char *buf, block* blocks) 
 {
   uint16 num_fats = read_int(buf, NUM_FATS, 1);
   printf("Number of FATs: %i\n", num_fats);
@@ -51,38 +51,17 @@ int find_root_dir(unsigned char *buf, block* blocks)
   // blocks before root directory
   uint16 bbrd = read_int(buf, FAT_SIZE, 2)*2 + read_int(buf, 0x0E, 2); // 0x0E is the number of reserved sectors
   printf("Blocks before root dir: %u\n", bbrd);
-
-  // get total bytes in a block
-  uint16 bbp = read_int(buf, BYTES_PER_BLOCK, 2);
-  printf("Bytes per block: %u\n", bbp);
-  uint16 tb;
-  if (read_int(buf, TOTAL_BLOCKS, 2) == 0) 
-  {
-    tb = read_int(buf, TOTAL_BLOCKS_2, 4);
-  }
-  else 
-  {
-    tb = read_int(buf, TOTAL_BLOCKS, 2);
-  }
-  printf("Total blocks: %u\n", tb);
-
-  int i;
-  for (i = 0; i < bbp; i++)
-  {
-    printf("%u", blocks[bbrd].data[i]);
-  }
-
-  // get data area
-  uint16 da = read_int(buf, FAT_SIZE, 2)*2 + read_int(buf, 0x0E,2) + read_int(buf, ROOT_ENTRIES, 2) * 32 / bbp;
-  printf("\n%x\n",find_offset(blocks[da]));
+  return bbrd;
 }
 
-uint16 find_offset(block b) 
+uint16 
+find_offset(block b) 
 {
   return b.num*512;
 }
 
-block* make_blocks(unsigned char *buf, size_t block_length) 
+block * 
+make_blocks(unsigned char *buf, size_t block_length) 
 {
   int i;
   int bc = 0; // block counter
@@ -126,4 +105,22 @@ block* make_blocks(unsigned char *buf, size_t block_length)
     }
   }
   return blocks;
+}
+
+int 
+get_file_attrs(block blocks, uint16 root_dir, file f)
+{
+  return 0;
+}
+
+int
+get_file_date(block blocks, uint16 root_dir, file f)
+{
+  return 0;
+}
+
+unsigned char *
+get_file_data(block blocks, uint16 root_dir, file f)
+{
+  return 0;
 }

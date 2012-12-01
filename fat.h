@@ -9,13 +9,31 @@ typedef struct {
   unsigned char *data;
 } block;
 
+typedef struct {
+  file * files;
+} directory;
+
+typedef struct {
+  unsigned long long filename;
+  int file_extension;
+  int file_attributes;
+} file;
+
+
 int check_fat16(unsigned char *buf);
 int find_root_dir(unsigned char *buf, block* blocks);
-// uint16 get_byte_array(unsigned char *buf, uint16 offset, uint16 length); 
 uint16 read_int(unsigned char *buf, uint16 offset, uint16 word_length);
 uint16 ctouint16(unsigned char *buf, size_t length);
 block *make_blocks(unsigned char *buf, size_t block_length);
 uint16 find_offset(block b);
+
+
+/*
+ * Methods for interfacing with files on the file system
+ */
+int get_file_attrs(block blocks, uint16 root_dir, file f);
+int get_file_date(block blocks, uint16 root_dir, file f);
+unsigned char * get_file_data(block blocks, uint16 root_dir, file f);
 
 #define FAT_16_SIGNATURE 0x36
 #define NUM_FATS 0x10
