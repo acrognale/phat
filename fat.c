@@ -49,17 +49,37 @@ int find_root_dir(unsigned char *buf, block* blocks)
   printf("Number of blocks for one FAT: %u\n",fat_size);
   
   // blocks before root directory
-  uint16 bbrd = (fat_size * num_fats) + 4;
+  uint16 bbrd = read_int(buf, FAT_SIZE, 2)*2 + read_int(buf, 0x0E, 2); // 0x0E is the number of reserved sectors
   printf("Blocks before root dir: %u\n", bbrd);
 
   // get total bytes in a block
   uint16 bbp = read_int(buf, BYTES_PER_BLOCK, 2);
   printf("Bytes per block: %u\n", bbp);
+  uint16 tb;
+  if (read_int(buf, TOTAL_BLOCKS, 2) == 0) 
+  {
+    tb = read_int(buf, TOTAL_BLOCKS_2, 4);
+  }
+  else 
+  {
+    tb = read_int(buf, TOTAL_BLOCKS, 2);
+  }
+  printf("Total blocks: %u\n", tb);
 
-  // find root directory..
-  uint16 root_dir = bbrd * bbp;
-  printf("Root directory is at: %x\n", root_dir);
-  printf("Total blocks: %u\n", read_int(buf, TOTAL_BLOCKS, 2));
+  int i;
+  for (i = 0; i < bbp; i++)
+  {
+    printf("%u", blocks[bbrd].data[i]);
+  }
+
+  // get data area
+  uint16 da = read_int(buf, FAT_SIZE, 2)*2 + read_int(buf, 0x0E,2) + read_int(buf, ROOT_ENTRIES, 2) * 32 / bbp;
+  printf("\n%x\n",find_offset(blocks[da]));
+}
+
+uint16 find_offset(block b) 
+{
+  return b.num*512;
 }
 
 block* make_blocks(unsigned char *buf, size_t block_length) 
@@ -71,7 +91,7 @@ block* make_blocks(unsigned char *buf, size_t block_length)
   uint16 total_blocks;
   total_blocks = read_int(buf,TOTAL_BLOCKS,2);
   blocks = malloc(sizeof(block)*block_length*total_blocks);
-  blocks->data = malloc(sizeof(unsigned char)*block_length*block_length);
+  blocks->data = malloc(sizeof(unsigned char)*block_length);
   for (i = 0; i < total_blocks * block_length; i++) 
   {
     if (&blocks[bc] == NULL)
@@ -94,6 +114,7 @@ block* make_blocks(unsigned char *buf, size_t block_length)
     {
       // blocks[bc].num = 1;
       blocks[bc].data[dc] = buf[i]; // copy last byte over
+      blocks[bc].num = bc; // set the block number
       bc++;
       blocks[bc].data = malloc(sizeof(unsigned char)*block_length);
       dc = 0;

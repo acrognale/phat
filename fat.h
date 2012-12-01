@@ -15,9 +15,13 @@ int find_root_dir(unsigned char *buf, block* blocks);
 uint16 read_int(unsigned char *buf, uint16 offset, uint16 word_length);
 uint16 ctouint16(unsigned char *buf, size_t length);
 block *make_blocks(unsigned char *buf, size_t block_length);
+uint16 find_offset(block b);
 
 #define FAT_16_SIGNATURE 0x36
 #define NUM_FATS 0x10
 #define FAT_SIZE 0x16
 #define BYTES_PER_BLOCK 0x0b
 #define TOTAL_BLOCKS 0x13
+#define TOTAL_BLOCKS_2 0x20
+#define FIRST_CLUSTER 0x0002
+#define ROOT_ENTRIES 0x11
